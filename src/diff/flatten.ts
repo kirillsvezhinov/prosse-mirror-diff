@@ -186,7 +186,11 @@ function rebuildLevel(lines: RenderLine[], depth: number): PMNode[] {
     }
     if (cfg.kind === "wrap") {
       const children = rebuildLevel(group, depth + 1);
-      result.push(schema.nodes[cfg.nodeType].create(null, children.length ? children : [schema.nodes.paragraph.create()]));
+      // createAndFill() picks whatever the schema's own default-fill type is
+      // for this content expression (e.g. empty_paragraph vs paragraph) —
+      // this engine doesn't hardcode that assumption for a node type it
+      // doesn't own.
+      result.push(children.length ? schema.nodes[cfg.nodeType].create(null, children) : schema.nodes[cfg.nodeType].createAndFill()!);
     } else {
       const items = group.map((l) => schema.nodes[cfg.itemType].create(null, [buildLeaf(l)]));
       result.push(schema.nodes[cfg.nodeType].create(groupAttrs as any, items));

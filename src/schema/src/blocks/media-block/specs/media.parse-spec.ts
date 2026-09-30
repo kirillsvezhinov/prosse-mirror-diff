@@ -1,11 +1,12 @@
-import { ParseSpec } from 'prosemirror-markdown';
+import type { ParseSpec } from 'prosemirror-markdown';
 import { extractAttachmentId } from '../../link-block/link-block.parse.spec';
 import { createMediaLocalId, DEFAULT_MIME_TYPE, getAttachmentUrl } from '../media.const';
 import { getFileType } from '../types/file-type';
 import { LoadStatus } from '../types/load-status';
 import { FILE_NODE_NAME } from './file.node-spec';
 import { IMAGE_NODE_NAME } from './image.node-spec';
-import { MediaNodeAttrs, MediaNodeAttrsFactory } from './media-node.attribute';
+import { MediaNodeAttrsFactory } from './media-node.attribute';
+import type { MediaNodeAttrs } from './media-node.attribute';
 
 export const mediaTokenSpec: Record<string, ParseSpec> = {
   image: {

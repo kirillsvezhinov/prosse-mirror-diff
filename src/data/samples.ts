@@ -1,4 +1,4 @@
-// Sample "old" / "new" ProseMirror documents (plain JSON, matching src/schema.ts)
+// Sample "old" / "new" ProseMirror documents (plain JSON, matching the schema in src/schema/)
 // used to demo the diff viewer: text insertions/deletions, list item add/edit/remove,
 // formatting-only changes (marks changed but text didn't), a changed link href,
 // a changed code block and an inserted horizontal rule.

@@ -1,4 +1,4 @@
-import { NodeSpec } from 'prosemirror-model';
+import type { NodeSpec } from 'prosemirror-model';
 import { DEFAULT_MIME_TYPE } from '../media.const';
 import { getFileType } from '../types/file-type';
 import { LoadStatus } from '../types/load-status';

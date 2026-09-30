@@ -1,4 +1,4 @@
-import { NodeSpec } from 'prosemirror-model';
+import type { NodeSpec } from 'prosemirror-model';
 
 /**
  * Маркер пустой строки между top-level блоками.

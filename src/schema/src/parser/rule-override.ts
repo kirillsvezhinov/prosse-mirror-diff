@@ -1,4 +1,4 @@
-import { StateCore, Token } from 'markdown-it';
+import type { StateCore, Token } from 'markdown-it';
 import { imageWithSize } from '../blocks/media-block/parser-md-rules/img-with-size.rule';
 import { emptyParagraphRule } from '../blocks/empty-paragraph/parser-md-rules/empty-paragraph.rule';
 import { blockTableCellRule } from '../blocks/table-block/parser-md-rules/rule-override.table-cell';

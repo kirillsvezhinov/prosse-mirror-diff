@@ -5,7 +5,7 @@
  */
 import { readFileSync } from "node:fs";
 import { diffDocuments } from "../src/diff/diffDoc";
-import { parseMarkdown } from "../src/markdown/fromMarkdown";
+import { parseMarkdown } from "../src/schema";
 
 function genDoc(paragraphs: number, seed: number): string {
   const lines: string[] = [];

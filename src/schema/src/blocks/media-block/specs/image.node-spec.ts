@@ -1,8 +1,8 @@
-import { NodeSpec, Node as PMNode } from 'prosemirror-model';
+import type { NodeSpec, Node as PMNode } from 'prosemirror-model';
 import { DEFAULT_MIME_TYPE } from '../media.const';
 import { getFileType } from '../types/file-type';
 import { LoadStatus } from '../types/load-status';
-import { MediaNodeAttrs } from './media-node.attribute';
+import type { MediaNodeAttrs } from './media-node.attribute';
 
 export const IMAGE_NODE_NAME = 'custom_image_node';
 

@@ -1,5 +1,6 @@
 
-import { defaultMarkdownParser, ParseSpec } from 'prosemirror-markdown';
+import { defaultMarkdownParser } from 'prosemirror-markdown';
+import type { ParseSpec } from 'prosemirror-markdown';
 import { listIsTight } from '../common/list-is-tight';
 
 

@@ -22,5 +22,9 @@
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src"]
+  "include": ["src"],
+  "exclude": [
+    "src/schema/src/**/*.test.ts",
+    "src/schema/src/roundtrip"
+  ]
 }

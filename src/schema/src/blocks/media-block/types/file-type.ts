@@ -3,18 +3,20 @@ import { DEFAULT_MIME_TYPE } from '../media.const';
 /*
  * Типы файлов
  */
-export enum FileType {
-  IMAGE = 'Image',
-  PDF = 'Pdf',
-  DOCUMENT = 'Document',
-  SPREADSHEET = 'Spreadsheet',
-  TXT = 'Txt',
-  ARCHIVE = 'Archive',
-  OTHER = 'Other',
-  VIDEO = 'Video',
-  AUDIO = 'Audio',
-  XML = 'Xml',
-}
+export const FileType = {
+  IMAGE: 'Image',
+  PDF: 'Pdf',
+  DOCUMENT: 'Document',
+  SPREADSHEET: 'Spreadsheet',
+  TXT: 'Txt',
+  ARCHIVE: 'Archive',
+  OTHER: 'Other',
+  VIDEO: 'Video',
+  AUDIO: 'Audio',
+  XML: 'Xml',
+} as const;
+
+export type FileType = (typeof FileType)[keyof typeof FileType];
 
 /**
  * Соответствие расширений файлов их mimeType которые мы поддерживаем

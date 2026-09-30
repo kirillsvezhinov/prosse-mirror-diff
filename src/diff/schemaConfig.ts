@@ -1,11 +1,12 @@
 import type { Node as PMNode } from "prosemirror-model";
 
 /**
- * Single source of truth for which nodes of src/schema.ts the diff engine
- * knows how to walk into a flat list of "lines" (flatten.ts) and rebuild
- * back into a nested document. Adding a node type to the schema does NOT
- * automatically teach the differ about it — see docs/EXTENDING_SCHEMA.md for
- * the full checklist; this file is step one of it.
+ * Single source of truth for which nodes of the schema (src/schema/src, the
+ * portable content model, plus src/schema/dom.ts's toDOM/parseDOM extensions)
+ * the diff engine knows how to walk into a flat list of "lines" (flatten.ts)
+ * and rebuild back into a nested document. Adding a node type to the schema
+ * does NOT automatically teach the differ about it — see
+ * docs/EXTENDING_SCHEMA.md for the full checklist; this file is step one of it.
  *
  * Two kinds of nodes exist here:
  *  - "leaf" nodes are diffable lines: they either hold inline content
@@ -22,7 +23,7 @@ import type { Node as PMNode } from "prosemirror-model";
  */
 
 export interface LeafNodeConfig {
-  /** Schema node name — must match a node in src/schema.ts. */
+  /** Schema node name — must match a node in the schema (src/schema/). */
   nodeType: string;
   /** True for nodes with no inline content, like horizontal_rule. */
   void?: boolean;
@@ -63,8 +64,51 @@ export type ContainerNodeConfig =
 export const LEAF_NODES = [
   { nodeType: "paragraph" },
   { nodeType: "heading", attrs: (node: PMNode) => ({ level: node.attrs.level }) },
-  { nodeType: "code_block" },
+  { nodeType: "code_block", attrs: (node: PMNode) => ({ language: node.attrs.language }) },
   { nodeType: "horizontal_rule", void: true },
+  // Marks a blank line between top-level blocks (see src/schema/src's
+  // markdown parser) — always empty in practice, so void is the right model:
+  // an inserted/deleted blank line still shows up (the line itself is the
+  // content), an *edited* one has nothing to diff inline.
+  { nodeType: "empty_paragraph", void: true },
+  // Block-level upload attachments (src/schema/src/blocks/media-block) — no
+  // inline text of their own, but their attrs (downloadUrl, fileName, ...)
+  // very much matter: see the void-leaf attrs check in diffDoc.ts's
+  // toRenderLine(), which is what makes "the file was swapped" show up as
+  // "modified" instead of silently passing through.
+  //
+  // Deliberately NOT a blanket `{...node.attrs}` spread: `localId` is a
+  // fresh `crypto.randomUUID()` minted by the parser on *every* parse (see
+  // media.parse-spec.ts) — even a genuinely unchanged image would get a
+  // different localId in the old vs. new doc, making every image look
+  // "different" no matter what. `status`/`progress` are upload-session
+  // runtime state, not authored content, and this viewer's toDOM never reads
+  // them anyway. Whitelisting to the attrs that actually identify "this
+  // image" keeps the comparison meaningful and avoids false positives.
+  {
+    nodeType: "custom_image_node",
+    void: true,
+    attrs: (node: PMNode) => ({
+      attachmentId: node.attrs.attachmentId,
+      fileName: node.attrs.fileName,
+      downloadUrl: node.attrs.downloadUrl,
+      mimeType: node.attrs.mimeType,
+      fileType: node.attrs.fileType,
+      width: node.attrs.width,
+      height: node.attrs.height,
+    }),
+  },
+  {
+    nodeType: "file_attachment",
+    void: true,
+    attrs: (node: PMNode) => ({
+      attachmentId: node.attrs.attachmentId,
+      fileName: node.attrs.fileName,
+      downloadUrl: node.attrs.downloadUrl,
+      mimeType: node.attrs.mimeType,
+      fileType: node.attrs.fileType,
+    }),
+  },
   {
     nodeType: "table",
     // No attrs: shape (row/cell count, colspan/rowspan) isn't decided here

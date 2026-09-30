@@ -5,8 +5,7 @@ import { ReadonlyEditor } from "./components/ReadonlyEditor";
 import { samplePairs } from "./data/samples";
 import { defaultNewMarkdown, defaultOldMarkdown } from "./data/markdownSamples";
 import { generateLargeMarkdown, editMarkdown } from "./data/perfGenerator";
-import { parseMarkdown } from "./markdown/fromMarkdown";
-import { schema } from "./schema";
+import { parseMarkdown, schema } from "./schema";
 import type { Node as PMNode } from "prosemirror-model";
 import "./styles.css";
 

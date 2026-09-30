@@ -428,29 +428,102 @@
   color: #0969da;
 }
 
+/* custom_image_node — a block-level attachment (see src/schema/dom.ts), not
+ * inline text, so it gets the same [data-diff] treatment as table/tr rather
+ * than the inline diffInsert/diffDelete mark styling used for text. */
 .pm-host .ProseMirror img {
+  display: block;
   max-width: 100%;
-  max-height: 220px;
-  vertical-align: middle;
-  border-radius: 4px;
+  max-height: 320px;
+  border-radius: 6px;
 }
 
-/* An <img> can't show a strikethrough/underline the way text does, so
- * inserted/deleted/changed images get an outline in the same color instead. */
-.diff-insert img {
+.pm-diff-host .ProseMirror img[data-diff] {
+  margin-left: 0;
+  padding-left: 0;
+  border-left: none;
+  outline-offset: 2px;
+}
+
+.pm-diff-host .ProseMirror img[data-diff="inserted"] {
   outline: 2px solid #1a7f37;
-  outline-offset: 1px;
 }
 
-.diff-delete img {
+.pm-diff-host .ProseMirror img[data-diff="deleted"] {
   outline: 2px solid #cf222e;
-  outline-offset: 1px;
   opacity: 0.55;
 }
 
-.diff-format img {
+.pm-diff-host .ProseMirror img[data-diff="modified"] {
   outline: 2px dashed #8250df;
-  outline-offset: 1px;
+}
+
+/* file_attachment — a "file chip": icon + filename, linking to downloadUrl. */
+.pm-host .ProseMirror a.file-attachment {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border: 1px solid #dcdce1;
+  border-radius: 6px;
+  background: #fafafc;
+  color: #1c1c1f;
+  text-decoration: none;
+  font-size: 13px;
+}
+
+.pm-host .ProseMirror a.file-attachment:hover {
+  background: #f0f0f3;
+}
+
+.pm-diff-host .ProseMirror a.file-attachment[data-diff] {
+  margin-left: 0;
+  padding-left: 10px;
+  border-left: 1px solid #dcdce1;
+}
+
+.pm-diff-host .ProseMirror a.file-attachment[data-diff="inserted"] {
+  border-color: #1a7f37;
+  background: rgba(26, 127, 55, 0.06);
+}
+
+.pm-diff-host .ProseMirror a.file-attachment[data-diff="deleted"] {
+  border-color: #cf222e;
+  background: rgba(207, 34, 46, 0.06);
+  opacity: 0.7;
+}
+
+.pm-diff-host .ProseMirror a.file-attachment[data-diff="modified"] {
+  border-color: #8250df;
+  background: rgba(130, 80, 223, 0.06);
+}
+
+/* empty_paragraph — a blank line between blocks; needs a visible height of
+ * its own since it never has content, otherwise an inserted/deleted blank
+ * line would render as a zero-height, invisible diff. Flat color fill, no
+ * left border — a border reads as "text starts here", which is misleading
+ * for a line that's never going to have any. */
+.pm-host .ProseMirror p.empty-line {
+  min-height: 1.2em;
+  margin: 0.6em 0;
+}
+
+.pm-diff-host .ProseMirror p.empty-line[data-diff] {
+  margin-left: 0;
+  padding-left: 0;
+  border-left: none;
+}
+
+.pm-diff-host .ProseMirror p.empty-line[data-diff="inserted"] {
+  background: rgba(26, 127, 55, 0.18);
+}
+
+.pm-diff-host .ProseMirror p.empty-line[data-diff="deleted"] {
+  background: rgba(207, 34, 46, 0.18);
+}
+
+.pm-diff-host .ProseMirror p.empty-line[data-diff="modified"] {
+  background: rgba(130, 80, 223, 0.18);
 }
 
 /* ---- inline diff marks ---- */

@@ -1,4 +1,4 @@
-import { ParseSpec } from 'prosemirror-markdown';
+import type { ParseSpec } from 'prosemirror-markdown';
 import { LanguageService } from './language.service';
 import { CODE_BLOCK_NODE, FALLBACK_PROGRAMMING_LANGUAGE } from './code.const';
 

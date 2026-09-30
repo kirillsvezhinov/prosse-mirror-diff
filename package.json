@@ -12,10 +12,11 @@
     "perf": "tsx scripts/perf.ts"
   },
   "dependencies": {
-    "markdown-it": "^15.0.2",
+    "markdown-it": "14.3.1",
     "prosemirror-markdown": "^1.13.7",
     "prosemirror-model": "^1.25.11",
     "prosemirror-state": "^1.4.4",
+    "prosemirror-tables": "1.8.5",
     "prosemirror-view": "^1.42.3",
     "react": "^19.2.8",
     "react-dom": "^19.2.8"

@@ -1,4 +1,4 @@
-import { Token } from 'markdown-it';
+import type { Token } from 'markdown-it';
 /**
  * Определяет, является ли список «плотным» (tight) или «рыхлым» (loose).
  *

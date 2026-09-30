@@ -1,4 +1,4 @@
-import { ParseSpec } from 'prosemirror-markdown';
+import type { ParseSpec } from 'prosemirror-markdown';
 import { TABLE_CELL_NODE, TABLE_HEADER_NODE, TABLE_NODE, TABLE_ROW_NODE } from './table.const';
 
 export const tableParseSpec: Record<string, ParseSpec> = {

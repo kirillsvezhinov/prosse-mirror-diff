@@ -2,7 +2,7 @@ import { Node as PMNode } from "prosemirror-model";
 import { schema } from "../schema";
 import { diffArrays } from "./myersDiff";
 import type { DiffStatus, Line, RenderLine } from "./flatten";
-import { flattenDoc, lineSignature, rebuildBlocks, rebuildDoc } from "./flatten";
+import { attrsEqual, flattenDoc, lineSignature, rebuildBlocks, rebuildDoc } from "./flatten";
 import { isVoidLeaf } from "./schemaConfig";
 import type { Run } from "./inlineDiff";
 import { diffInline, nextChangeId, resetChangeIdCounter } from "./inlineDiff";
@@ -204,13 +204,19 @@ function toRenderLine(op: LineOp, stats: DiffStats, pairing: PairingMode): Rende
   // equal or modify: always run inline diff, since a line-level "equal" match
   // only guarantees identical plain text, not identical marks.
   if (isVoidLeaf(op.oldLine.nodeType)) {
+    // A void leaf has no inline content to diff, but it can still have
+    // attrs that changed (e.g. custom_image_node/file_attachment's
+    // downloadUrl) — those must surface as "modified", not pass through
+    // silently just because there's no text to compare.
+    const changed = !attrsEqual(op.oldLine.attrs, op.newLine.attrs);
+    if (changed) stats.modifiedLines++;
     return {
       path: op.newLine.path,
       containerAttrs: op.newLine.containerAttrs,
       nodeType: op.newLine.nodeType,
       attrs: op.newLine.attrs,
       runs: [],
-      diffStatus: null,
+      diffStatus: changed ? "modified" : null,
     };
   }
 
@@ -431,7 +437,11 @@ function renderTableRow(op: RowOp, stats: DiffStats, pairing: PairingMode, markC
     const cellRenderLines = diffBlocks(flattenDoc(oldCell), flattenDoc(newCell), pairing, stats);
     if (cellRenderLines.some((l) => l.diffStatus !== null)) rowChanged = true;
     const content = rebuildBlocks(cellRenderLines, 0);
-    return newCell.type.create(newCell.attrs, content.length ? content : [schema.nodes.paragraph.create()], newCell.marks);
+    // createAndFill() picks whatever the schema's own default-fill type is
+    // (empty_paragraph here) rather than this engine hardcoding that.
+    return content.length
+      ? newCell.type.create(newCell.attrs, content, newCell.marks)
+      : newCell.type.createAndFill(newCell.attrs, null, newCell.marks)!;
   });
 
   if (rowChanged) {

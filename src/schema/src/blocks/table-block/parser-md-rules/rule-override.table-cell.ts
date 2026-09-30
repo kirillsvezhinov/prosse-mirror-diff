@@ -1,5 +1,4 @@
-import { Token } from 'markdown-it';
-import type { StateCore } from 'markdown-it';
+import type { StateCore, Token } from 'markdown-it';
 
 export function blockTableCellRule(state: StateCore): void {
   const tokens = state.tokens;

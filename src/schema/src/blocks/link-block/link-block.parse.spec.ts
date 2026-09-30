@@ -1,4 +1,4 @@
-import { ParseSpec } from 'prosemirror-markdown';
+import type { ParseSpec } from 'prosemirror-markdown';
 
 export const extractAttachmentId = (url: string): null | string => {
   // Регулярное выражение для проверки паттерна и захвата UUID

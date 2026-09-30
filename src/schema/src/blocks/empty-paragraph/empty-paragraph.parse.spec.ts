@@ -1,6 +1,4 @@
-import { schema as markdownSchema, ParseSpec } from 'prosemirror-markdown';
-import type { Mark, MarkSpec } from 'prosemirror-model';
-
+import type { ParseSpec } from 'prosemirror-markdown';
 
 export const emptyParagraphParseSpec: Record<string, ParseSpec> = {
   empty_paragraph: { node: 'empty_paragraph' },

@@ -1,7 +1,7 @@
 import { diffDocuments } from "../src/diff/diffDoc";
 import { samplePairs } from "../src/data/samples";
 import { defaultNewMarkdown, defaultOldMarkdown } from "../src/data/markdownSamples";
-import { parseMarkdown } from "../src/markdown/fromMarkdown";
+import { parseMarkdown } from "../src/schema";
 
 for (const pair of samplePairs) {
   console.log(`\n=== ${pair.label} ===`);
