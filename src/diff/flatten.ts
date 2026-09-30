@@ -18,6 +18,25 @@ export interface Line {
   attrs: Record<string, unknown>;
   chars: CharUnit[];
   plainText: string;
+  /** FNV-1a hash of plainText, computed once at flatten time. Lets the diff
+   * equality check reject a same-length-but-different-content pair in O(1)
+   * instead of a full O(len) string scan — worthwhile because this equality
+   * check runs tens of millions of times on a multi-MB document. */
+  textHash: number;
+  /** Only set for a "structuredText" leaf (currently just `table`): the
+   * original node, so diffDoc.ts's dedicated handling can recurse into its
+   * actual row/cell structure instead of the normal per-character inline
+   * diff, which doesn't apply here. */
+  node?: PMNode;
+}
+
+function hashText(s: string): number {
+  let h = 0x811c9dc5;
+  for (let i = 0; i < s.length; i++) {
+    h ^= s.charCodeAt(i);
+    h = Math.imul(h, 0x01000193);
+  }
+  return h >>> 0;
 }
 
 export function flattenDoc(doc: PMNode): Line[] {
@@ -37,14 +56,30 @@ function walk(
 
     const leaf = leafConfigFor(typeName);
     if (leaf) {
+      if (leaf.structuredText) {
+        const plainText = leaf.structuredText(child);
+        out.push({
+          path,
+          containerAttrs,
+          nodeType: typeName as LeafNodeType,
+          attrs: leaf.attrs ? leaf.attrs(child) : {},
+          chars: [],
+          plainText,
+          textHash: hashText(plainText),
+          node: child,
+        });
+        return;
+      }
       const chars = leaf.void ? [] : flattenInlineNode(child);
+      const plainText = chars.map((c) => c.ch).join("");
       out.push({
         path,
         containerAttrs,
         nodeType: typeName as LeafNodeType,
         attrs: leaf.attrs ? leaf.attrs(child) : {},
         chars,
-        plainText: chars.map((c) => c.ch).join(""),
+        plainText,
+        textHash: hashText(plainText),
       });
       return;
     }
@@ -73,8 +108,21 @@ export function attrsEqual(a: Record<string, unknown>, b: Record<string, unknown
   return JSON.stringify(a) === JSON.stringify(b);
 }
 
+// The diff engine calls lineSignature() as an O(1) piece of an equality
+// predicate that itself runs inside the O(N*D) inner loop of the array-diff
+// algorithm — on a multi-MB document that's tens of millions of calls, so
+// recomputing path.join/JSON.stringify every time (instead of once per line,
+// which is immutable once flattened) was the dominant cost, not the diff
+// algorithm itself.
+const signatureCache = new WeakMap<Line, string>();
+
 export function lineSignature(line: Line): string {
-  return `${line.path.join("/")}#${line.nodeType}#${JSON.stringify(line.attrs)}`;
+  let sig = signatureCache.get(line);
+  if (sig === undefined) {
+    sig = `${line.path.join("/")}#${line.nodeType}#${JSON.stringify(line.attrs)}`;
+    signatureCache.set(line, sig);
+  }
+  return sig;
 }
 
 // ---- rebuilding a diffed doc from a flat, ordered list of rendered lines ----
@@ -88,11 +136,23 @@ export interface RenderLine {
   attrs: Record<string, unknown>;
   runs: Run[];
   diffStatus: DiffStatus;
+  /** Escape hatch for a leaf whose final node diffDoc.ts already built by
+   * hand (currently just `table`, reassembled from per-cell recursive diffs)
+   * — buildLeaf() returns this as-is instead of going through the generic
+   * attrs+runs reconstruction, which assumes flat inline content. */
+  prebuiltNode?: PMNode;
 }
 
 export function rebuildDoc(lines: RenderLine[]): PMNode {
-  const blocks = rebuildLevel(lines, 0);
+  const blocks = rebuildBlocks(lines, 0);
   return schema.nodes.doc.create(null, blocks);
+}
+
+/** Rebuild a flat, ordered RenderLine[] back into a nested block array —
+ * exported so diffDoc.ts's table handling can reuse it to rebuild a single
+ * cell's content the exact same way the top-level doc is rebuilt. */
+export function rebuildBlocks(lines: RenderLine[], depth: number): PMNode[] {
+  return rebuildLevel(lines, depth);
 }
 
 function rebuildLevel(lines: RenderLine[], depth: number): PMNode[] {
@@ -137,10 +197,13 @@ function rebuildLevel(lines: RenderLine[], depth: number): PMNode[] {
 }
 
 function buildLeaf(line: RenderLine): PMNode {
+  if (line.prebuiltNode) return line.prebuiltNode;
   const attrs = { ...line.attrs, diffStatus: line.diffStatus };
   if (isVoidLeaf(line.nodeType)) {
     return schema.nodes[line.nodeType].create(attrs);
   }
-  const content = line.runs.filter((r) => r.text.length > 0).map((r) => schema.text(r.text, r.marks));
+  const content = line.runs
+    .filter((r) => r.text.length > 0 || r.node)
+    .map((r) => (r.node ? r.node.type.create(r.node.attrs, null, r.marks) : schema.text(r.text, r.marks)));
   return schema.nodes[line.nodeType].create(attrs, content);
 }

@@ -8,7 +8,8 @@
     "build": "tsc -b && vite build",
     "lint": "oxlint",
     "preview": "vite preview",
-    "smoke": "tsx scripts/smoke.ts"
+    "smoke": "tsx scripts/smoke.ts",
+    "perf": "tsx scripts/perf.ts"
   },
   "dependencies": {
     "markdown-it": "^15.0.2",

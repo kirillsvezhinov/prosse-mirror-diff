@@ -204,6 +204,64 @@
   font-weight: 600;
 }
 
+.stat-time {
+  color: #77777f;
+  font-variant-numeric: tabular-nums;
+}
+
+.ghost-button.active {
+  background: #1c1c1f;
+  color: #fff;
+  border-color: #1c1c1f;
+}
+
+.perf-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+  font-size: 13px;
+}
+
+.perf-controls-label {
+  color: #77777f;
+}
+
+.size-badge {
+  text-transform: none;
+  letter-spacing: normal;
+  color: #8250df;
+  font-weight: 600;
+  font-size: 11px;
+}
+
+.diff-compare {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+@media (max-width: 900px) {
+  .diff-compare {
+    grid-template-columns: 1fr;
+  }
+}
+
+.diff-compare-title {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 14px;
+  margin: 0 0 8px;
+}
+
+.diff-compare-hint {
+  font-size: 11px;
+  font-weight: 400;
+  color: #77777f;
+}
+
 .sources {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -299,8 +357,100 @@
   margin: 1.2em 0;
 }
 
+.pm-host .ProseMirror table {
+  border-collapse: collapse;
+  margin: 0.8em 0;
+  width: 100%;
+  font-size: 14px;
+}
+
+.pm-host .ProseMirror th,
+.pm-host .ProseMirror td {
+  border: 1px solid #dcdce1;
+  padding: 6px 10px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.pm-host .ProseMirror th {
+  background: #fafafc;
+  font-weight: 600;
+}
+
+.pm-host .ProseMirror th p,
+.pm-host .ProseMirror td p {
+  margin: 0;
+}
+
+/* A whole deleted/inserted table (no matching table on the other side at
+ * all) reuses the same [data-diff] tint as any other leaf, but a left border
+ * reads oddly on a multi-column table — outline the whole table instead. */
+.pm-diff-host .ProseMirror table[data-diff] {
+  margin-left: 0;
+  padding-left: 0;
+  border-left: none;
+}
+
+.pm-diff-host .ProseMirror table[data-diff="deleted"] {
+  background: rgba(207, 34, 46, 0.06);
+  outline: 2px solid rgba(207, 34, 46, 0.35);
+}
+
+.pm-diff-host .ProseMirror table[data-diff="inserted"] {
+  background: rgba(26, 127, 55, 0.06);
+  outline: 2px solid rgba(26, 127, 55, 0.35);
+}
+
+.pm-diff-host .ProseMirror table[data-diff="modified"] {
+  outline: 2px solid rgba(130, 80, 223, 0.35);
+}
+
+/* A single added/removed *row* within an otherwise-matched table — the
+ * common case (see docs/EXTENDING_SCHEMA.md §9): only that row is tinted,
+ * not the whole table. A "modified" row (cell content changed in place)
+ * needs no extra tint here — the changed cell's own paragraph already gets
+ * the usual [data-diff="modified"] left border. */
+.pm-diff-host .ProseMirror tr[data-diff] {
+  margin-left: 0;
+  padding-left: 0;
+  border-left: none;
+}
+
+.pm-diff-host .ProseMirror tr[data-diff="deleted"] {
+  background: rgba(207, 34, 46, 0.08);
+}
+
+.pm-diff-host .ProseMirror tr[data-diff="inserted"] {
+  background: rgba(26, 127, 55, 0.08);
+}
+
 .pm-host .ProseMirror a {
   color: #0969da;
+}
+
+.pm-host .ProseMirror img {
+  max-width: 100%;
+  max-height: 220px;
+  vertical-align: middle;
+  border-radius: 4px;
+}
+
+/* An <img> can't show a strikethrough/underline the way text does, so
+ * inserted/deleted/changed images get an outline in the same color instead. */
+.diff-insert img {
+  outline: 2px solid #1a7f37;
+  outline-offset: 1px;
+}
+
+.diff-delete img {
+  outline: 2px solid #cf222e;
+  outline-offset: 1px;
+  opacity: 0.55;
+}
+
+.diff-format img {
+  outline: 2px dashed #8250df;
+  outline-offset: 1px;
 }
 
 /* ---- inline diff marks ---- */

@@ -1,8 +1,10 @@
 import { useMemo, useState } from "react";
 import { DiffView } from "./components/DiffView";
+import { DiffCompare } from "./components/DiffCompare";
 import { ReadonlyEditor } from "./components/ReadonlyEditor";
 import { samplePairs } from "./data/samples";
 import { defaultNewMarkdown, defaultOldMarkdown } from "./data/markdownSamples";
+import { generateLargeMarkdown, editMarkdown } from "./data/perfGenerator";
 import { parseMarkdown } from "./markdown/fromMarkdown";
 import { schema } from "./schema";
 import type { Node as PMNode } from "prosemirror-model";
@@ -10,12 +12,25 @@ import "./styles.css";
 
 type Mode = "samples" | "markdown";
 
+const LARGE_DOC_SIZES = [
+  { label: "~1 МБ", paragraphs: 3400 },
+  { label: "~3 МБ", paragraphs: 10200 },
+  { label: "~5 МБ", paragraphs: 17000 },
+];
+
 export default function App() {
   const [mode, setMode] = useState<Mode>("markdown");
   const [pairId, setPairId] = useState(samplePairs[0].id);
   const [oldMd, setOldMd] = useState(defaultOldMarkdown);
   const [newMd, setNewMd] = useState(defaultNewMarkdown);
   const [showSources, setShowSources] = useState(false);
+  const [compareMode, setCompareMode] = useState(false);
+
+  function loadLargeDoc(paragraphs: number) {
+    const old = generateLargeMarkdown(paragraphs, 42);
+    setOldMd(old);
+    setNewMd(editMarkdown(old, 0.05, 99));
+  }
 
   const pair = samplePairs.find((p) => p.id === pairId) ?? samplePairs[0];
 
@@ -70,26 +85,44 @@ export default function App() {
         <button className="ghost-button" onClick={() => setShowSources((v) => !v)}>
           {showSources ? "Скрыть исходные версии" : "Показать исходные версии (old / new)"}
         </button>
+
+        <button className={compareMode ? "ghost-button active" : "ghost-button"} onClick={() => setCompareMode((v) => !v)}>
+          {compareMode ? "Один вариант pairing" : "Сравнить structural vs similarity"}
+        </button>
       </div>
 
       {mode === "markdown" && (
-        <section className="markdown-inputs">
-          <div className="markdown-column">
-            <h2 className="section-title">Markdown — old</h2>
-            <textarea className="markdown-textarea" value={oldMd} onChange={(e) => setOldMd(e.target.value)} spellCheck={false} />
-            {oldParsed.error && <div className="parse-error">Ошибка разбора: {oldParsed.error}</div>}
+        <>
+          <div className="perf-controls">
+            <span className="perf-controls-label">Тест производительности:</span>
+            {LARGE_DOC_SIZES.map((s) => (
+              <button key={s.label} className="ghost-button" onClick={() => loadLargeDoc(s.paragraphs)}>
+                Сгенерировать {s.label}
+              </button>
+            ))}
           </div>
-          <div className="markdown-column">
-            <h2 className="section-title">Markdown — new</h2>
-            <textarea className="markdown-textarea" value={newMd} onChange={(e) => setNewMd(e.target.value)} spellCheck={false} />
-            {newParsed.error && <div className="parse-error">Ошибка разбора: {newParsed.error}</div>}
-          </div>
-        </section>
+          <section className="markdown-inputs">
+            <div className="markdown-column">
+              <h2 className="section-title">
+                Markdown — old <span className="size-badge">{formatSize(oldMd.length)}</span>
+              </h2>
+              <textarea className="markdown-textarea" value={oldMd} onChange={(e) => setOldMd(e.target.value)} spellCheck={false} />
+              {oldParsed.error && <div className="parse-error">Ошибка разбора: {oldParsed.error}</div>}
+            </div>
+            <div className="markdown-column">
+              <h2 className="section-title">
+                Markdown — new <span className="size-badge">{formatSize(newMd.length)}</span>
+              </h2>
+              <textarea className="markdown-textarea" value={newMd} onChange={(e) => setNewMd(e.target.value)} spellCheck={false} />
+              {newParsed.error && <div className="parse-error">Ошибка разбора: {newParsed.error}</div>}
+            </div>
+          </section>
+        </>
       )}
 
       <section>
         <h2 className="section-title">Diff</h2>
-        <DiffView oldDoc={oldDoc} newDoc={newDoc} />
+        {compareMode ? <DiffCompare oldDoc={oldDoc} newDoc={newDoc} /> : <DiffView oldDoc={oldDoc} newDoc={newDoc} />}
       </section>
 
       {showSources && (
@@ -106,6 +139,10 @@ export default function App() {
       )}
     </div>
   );
+}
+
+function formatSize(chars: number): string {
+  return chars < 1024 * 1024 ? `${(chars / 1024).toFixed(1)} КБ` : `${(chars / 1024 / 1024).toFixed(2)} МБ`;
 }
 
 function tryParseMarkdown(source: string): { doc: PMNode; error: string | null } {

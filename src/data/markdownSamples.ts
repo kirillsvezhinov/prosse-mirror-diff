@@ -8,7 +8,15 @@ This release improves performance and fixes a few bugs reported by the community
 - Improved memory usage
 - Minor UI polish
 
+![Dashboard preview](https://example.com/img/dashboard-v1.png)
+
 **Note:** this build is *experimental* and may be unstable.
+
+| Metric | v1.0.0 |
+| --- | --- |
+| Cold start | 480ms |
+| Memory (idle) | 64MB |
+| Bundle size | 210KB |
 
 > Feedback is welcome via the issue tracker.
 
@@ -29,7 +37,15 @@ This release greatly improves performance, adds dark mode, and fixes a number of
 - Improved memory usage by 30%
 - Dark mode support
 
+![Dashboard preview](https://example.com/img/dashboard-v2.png)
+
 **Note:** this build is ***stable*** and ready for production.
+
+| Metric | v2.0.0 |
+| --- | --- |
+| Cold start | 310ms |
+| Memory (idle) | 64MB |
+| Bundle size | 245KB |
 
 > Feedback is welcome via the issue tracker.
 

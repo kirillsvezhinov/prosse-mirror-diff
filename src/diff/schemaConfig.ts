@@ -34,6 +34,16 @@ export interface LeafNodeConfig {
    * nor preserved.
    */
   attrs?: (node: PMNode) => Record<string, unknown>;
+  /**
+   * For a leaf whose content isn't flat inline text (currently only
+   * `table`): compute the plain text used for equality/similarity checks
+   * without going through flattenInlineNode (which assumes direct inline
+   * content), and flag — by being present — that flatten.ts must also keep
+   * the original node around (`Line.node`) for diffDoc.ts's dedicated
+   * handling to recurse into, bypassing the normal per-character inline
+   * diff entirely. See docs/EXTENDING_SCHEMA.md.
+   */
+  structuredText?: (node: PMNode) => string;
 }
 
 export type ContainerNodeConfig =
@@ -55,6 +65,16 @@ export const LEAF_NODES = [
   { nodeType: "heading", attrs: (node: PMNode) => ({ level: node.attrs.level }) },
   { nodeType: "code_block" },
   { nodeType: "horizontal_rule", void: true },
+  {
+    nodeType: "table",
+    // No attrs: shape (row/cell count, colspan/rowspan) isn't decided here
+    // anymore — diffDoc.ts's toRenderTableLine() LCS-diffs rows itself and
+    // handles a per-row shape mismatch there, so two tables in the same doc
+    // slot are always a valid "modify" candidate regardless of row count.
+    // node.textContent recurses through rows/cells/paragraphs on its own —
+    // no dependency on flatten.ts needed just to get a plain-text signature.
+    structuredText: (node: PMNode) => node.textContent,
+  },
 ] as const satisfies readonly LeafNodeConfig[];
 
 export const CONTAINER_NODES = [

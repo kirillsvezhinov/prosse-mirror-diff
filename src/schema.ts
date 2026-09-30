@@ -12,6 +12,28 @@ import { Schema } from "prosemirror-model";
 
 const diffStatusAttr = { diffStatus: { default: null as null | "inserted" | "deleted" | "modified" } };
 
+const cellAttrs = {
+  colspan: { default: 1 },
+  rowspan: { default: 1 },
+  colwidth: { default: null as number[] | null },
+};
+
+function cellDOMAttrs(node: { attrs: Record<string, any> }) {
+  const attrs: Record<string, string> = {};
+  if (node.attrs.colspan !== 1) attrs.colspan = String(node.attrs.colspan);
+  if (node.attrs.rowspan !== 1) attrs.rowspan = String(node.attrs.rowspan);
+  return attrs;
+}
+
+function parseCellAttrs(dom: HTMLElement | string) {
+  const el = dom as HTMLElement;
+  return {
+    colspan: Number(el.getAttribute("colspan")) || 1,
+    rowspan: Number(el.getAttribute("rowspan")) || 1,
+    colwidth: null,
+  };
+}
+
 export const schema = new Schema({
   nodes: {
     doc: { content: "block+" },
@@ -68,6 +90,52 @@ export const schema = new Schema({
       },
     },
 
+    // Node shapes mirror prosemirror-tables' `tableNodes()` output (table /
+    // table_row / table_cell / table_header with colspan/rowspan/colwidth),
+    // so a document produced by an editor built on that package round-trips
+    // through this schema unchanged. Only the shapes are replicated here —
+    // this is a read-only diff viewer, so the interactive column-resizing /
+    // cell-selection plugin from that package isn't needed.
+    table: {
+      content: "table_row+",
+      group: "block",
+      isolating: true,
+      attrs: diffStatusAttr,
+      parseDOM: [{ tag: "table" }],
+      toDOM(node) {
+        return ["table", { "data-diff": node.attrs.diffStatus || undefined }, ["tbody", 0]];
+      },
+    },
+
+    table_row: {
+      content: "(table_cell | table_header)*",
+      attrs: diffStatusAttr,
+      parseDOM: [{ tag: "tr" }],
+      toDOM(node) {
+        return ["tr", { "data-diff": node.attrs.diffStatus || undefined }, 0];
+      },
+    },
+
+    table_cell: {
+      content: "block+",
+      attrs: cellAttrs,
+      isolating: true,
+      parseDOM: [{ tag: "td", getAttrs: parseCellAttrs }],
+      toDOM(node) {
+        return ["td", cellDOMAttrs(node), 0];
+      },
+    },
+
+    table_header: {
+      content: "block+",
+      attrs: cellAttrs,
+      isolating: true,
+      parseDOM: [{ tag: "th", getAttrs: parseCellAttrs }],
+      toDOM(node) {
+        return ["th", cellDOMAttrs(node), 0];
+      },
+    },
+
     bullet_list: {
       content: "list_item+",
       group: "block",
@@ -92,6 +160,26 @@ export const schema = new Schema({
       parseDOM: [{ tag: "li" }],
       toDOM() {
         return ["li", 0];
+      },
+    },
+
+    image: {
+      inline: true,
+      group: "inline",
+      atom: true,
+      attrs: { src: {}, alt: { default: null as string | null }, title: { default: null as string | null } },
+      parseDOM: [
+        {
+          tag: "img[src]",
+          getAttrs: (dom) => ({
+            src: (dom as HTMLElement).getAttribute("src"),
+            alt: (dom as HTMLElement).getAttribute("alt"),
+            title: (dom as HTMLElement).getAttribute("title"),
+          }),
+        },
+      ],
+      toDOM(node) {
+        return ["img", { src: node.attrs.src, alt: node.attrs.alt, title: node.attrs.title }];
       },
     },
 

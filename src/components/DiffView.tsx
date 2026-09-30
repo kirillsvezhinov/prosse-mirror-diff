@@ -1,21 +1,22 @@
 import { useMemo } from "react";
 import { diffDocuments } from "../diff/diffDoc";
-import type { DocInput } from "../diff/diffDoc";
+import type { DocInput, PairingMode } from "../diff/diffDoc";
 import { ReadonlyEditor } from "./ReadonlyEditor";
 
 interface DiffViewProps {
   oldDoc: DocInput;
   newDoc: DocInput;
+  pairing?: PairingMode;
 }
 
-export function DiffView({ oldDoc, newDoc }: DiffViewProps) {
+export function DiffView({ oldDoc, newDoc, pairing = "structural" }: DiffViewProps) {
   const result = useMemo(() => {
     try {
-      return { ok: true as const, ...diffDocuments(oldDoc, newDoc) };
+      return { ok: true as const, ...diffDocuments(oldDoc, newDoc, { pairing }) };
     } catch (err) {
       return { ok: false as const, error: err instanceof Error ? err.message : String(err) };
     }
-  }, [oldDoc, newDoc]);
+  }, [oldDoc, newDoc, pairing]);
 
   if (!result.ok) {
     return (
@@ -25,7 +26,7 @@ export function DiffView({ oldDoc, newDoc }: DiffViewProps) {
     );
   }
 
-  const { doc, stats } = result;
+  const { doc, stats, durationMs } = result;
 
   return (
     <div className="diff-panel">
@@ -39,11 +40,16 @@ export function DiffView({ oldDoc, newDoc }: DiffViewProps) {
             {stats.insertedLines} line{stats.insertedLines === 1 ? "" : "s"} added ·{" "}
             {stats.deletedLines} removed · {stats.modifiedLines} edited
           </span>
+          <span className="stat stat-time">{formatDuration(durationMs)}</span>
         </div>
       </div>
       <ReadonlyEditor doc={doc} className="pm-host pm-diff-host" />
     </div>
   );
+}
+
+function formatDuration(ms: number): string {
+  return ms < 1 ? "<1 ms" : ms < 1000 ? `${ms.toFixed(1)} ms` : `${(ms / 1000).toFixed(2)} s`;
 }
 
 function Legend() {
