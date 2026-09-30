@@ -1,0 +1,364 @@
+.app {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 32px 24px 80px;
+}
+
+.app-header h1 {
+  font-size: 22px;
+  margin: 0 0 6px;
+}
+
+.app-subtitle {
+  margin: 0;
+  color: #55555c;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 20px 0;
+  flex-wrap: wrap;
+}
+
+.controls select {
+  font-size: 14px;
+  padding: 5px 8px;
+  border-radius: 6px;
+  border: 1px solid #d0d0d6;
+  background: #fff;
+}
+
+.ghost-button {
+  font-size: 13px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #d0d0d6;
+  background: #fff;
+  cursor: pointer;
+  color: #333;
+}
+
+.ghost-button:hover {
+  background: #f0f0f3;
+}
+
+.mode-switch {
+  display: inline-flex;
+  border: 1px solid #d0d0d6;
+  border-radius: 7px;
+  overflow: hidden;
+}
+
+.tab {
+  font-size: 13px;
+  padding: 6px 12px;
+  border: none;
+  background: #fff;
+  color: #444;
+  cursor: pointer;
+}
+
+.tab + .tab {
+  border-left: 1px solid #d0d0d6;
+}
+
+.tab.active {
+  background: #1c1c1f;
+  color: #fff;
+}
+
+.markdown-inputs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 28px;
+}
+
+@media (max-width: 720px) {
+  .markdown-inputs {
+    grid-template-columns: 1fr;
+  }
+}
+
+.markdown-textarea {
+  width: 100%;
+  min-height: 260px;
+  box-sizing: border-box;
+  resize: vertical;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 13px;
+  line-height: 1.5;
+  padding: 12px 14px;
+  border: 1px solid #dcdce1;
+  border-radius: 8px;
+  background: #fff;
+  color: #1c1c1f;
+}
+
+.markdown-textarea:focus {
+  outline: 2px solid #8250df;
+  outline-offset: -1px;
+}
+
+.parse-error {
+  margin-top: 6px;
+  font-size: 12px;
+  color: #cf222e;
+  background: rgba(207, 34, 46, 0.08);
+  border-radius: 6px;
+  padding: 6px 10px;
+}
+
+.diff-error {
+  padding: 16px;
+  font-size: 13px;
+  color: #cf222e;
+}
+
+.section-title {
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #77777f;
+  margin: 0 0 8px;
+}
+
+.diff-panel {
+  border: 1px solid #dcdce1;
+  border-radius: 10px;
+  background: #fff;
+  overflow: hidden;
+}
+
+.diff-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 10px 16px;
+  border-bottom: 1px solid #eceef1;
+  background: #fafafc;
+}
+
+.diff-legend {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  font-size: 12px;
+  color: #444;
+}
+
+.legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.legend-swatch {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 1px 5px;
+  border-radius: 3px;
+  line-height: 1.5;
+}
+
+.line-swatch {
+  width: 14px;
+  height: 12px;
+  border-radius: 2px;
+  padding: 0;
+  background: linear-gradient(90deg, rgba(26, 127, 55, 0.18) 50%, rgba(207, 34, 46, 0.18) 50%);
+  border-left: 3px solid #1a7f37;
+}
+
+.diff-stats {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  font-size: 12px;
+}
+
+.stat {
+  color: #666;
+  white-space: nowrap;
+}
+
+.stat-ins {
+  color: #1a7f37;
+  font-weight: 600;
+}
+
+.stat-del {
+  color: #cf222e;
+  font-weight: 600;
+}
+
+.stat-fmt {
+  color: #8250df;
+  font-weight: 600;
+}
+
+.sources {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-top: 28px;
+}
+
+@media (max-width: 720px) {
+  .sources {
+    grid-template-columns: 1fr;
+  }
+}
+
+.source-column .pm-host {
+  border: 1px solid #dcdce1;
+  border-radius: 10px;
+  background: #fff;
+}
+
+/* ---- ProseMirror read-only content ---- */
+
+.pm-host {
+  padding: 20px 24px;
+}
+
+.pm-host .ProseMirror {
+  outline: none;
+  font-size: 15px;
+  line-height: 1.65;
+  color: #1c1c1f;
+  caret-color: transparent;
+}
+
+.pm-host .ProseMirror h1,
+.pm-host .ProseMirror h2,
+.pm-host .ProseMirror h3 {
+  line-height: 1.3;
+  margin: 1.1em 0 0.4em;
+}
+
+.pm-host .ProseMirror h1:first-child,
+.pm-host .ProseMirror h2:first-child,
+.pm-host .ProseMirror h3:first-child {
+  margin-top: 0;
+}
+
+.pm-host .ProseMirror p {
+  margin: 0.6em 0;
+}
+
+.pm-host .ProseMirror blockquote {
+  margin: 0.8em 0;
+  padding: 2px 16px;
+  border-left: 3px solid #d0d0d6;
+  color: #55555c;
+}
+
+.pm-host .ProseMirror pre {
+  background: #f4f4f6;
+  border-radius: 6px;
+  padding: 12px 14px;
+  overflow-x: auto;
+  font-size: 13px;
+  margin: 0.8em 0;
+}
+
+.pm-host .ProseMirror code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.9em;
+  background: #f0f0f3;
+  border-radius: 3px;
+  padding: 0.1em 0.35em;
+}
+
+.pm-host .ProseMirror pre code {
+  background: none;
+  padding: 0;
+}
+
+.pm-host .ProseMirror ul,
+.pm-host .ProseMirror ol {
+  margin: 0.5em 0;
+  padding-left: 1.4em;
+}
+
+.pm-host .ProseMirror li {
+  margin: 0.15em 0;
+}
+
+.pm-host .ProseMirror hr {
+  border: none;
+  border-top: 1px solid #dcdce1;
+  margin: 1.2em 0;
+}
+
+.pm-host .ProseMirror a {
+  color: #0969da;
+}
+
+/* ---- inline diff marks ---- */
+
+.diff-insert {
+  text-decoration: none;
+  background: rgba(26, 127, 55, 0.15);
+  color: #116329;
+  border-radius: 2px;
+  box-shadow: 0 0 0 1px rgba(26, 127, 55, 0.25);
+  padding: 0 1px;
+}
+
+.diff-delete {
+  background: rgba(207, 34, 46, 0.12);
+  color: #82061f;
+  text-decoration: line-through;
+  text-decoration-thickness: 1.5px;
+  border-radius: 2px;
+  padding: 0 1px;
+}
+
+.diff-format {
+  background: rgba(130, 80, 223, 0.12);
+  border-radius: 2px;
+  padding: 0 1px;
+  text-decoration: underline wavy rgba(130, 80, 223, 0.7);
+  text-decoration-skip-ink: none;
+  cursor: help;
+}
+
+/* ---- block-level (whole line added / removed / edited) ----
+ * Generic on purpose: `data-diff` is only ever emitted by a leaf node's own
+ * toDOM (see src/schema.ts), so matching the attribute alone — instead of
+ * enumerating p/h1/h2/h3/pre/hr — means a new leaf node type picks up this
+ * styling automatically, with nothing to add here. */
+
+.pm-diff-host .ProseMirror [data-diff] {
+  margin-left: -12px;
+  padding-left: 9px;
+  border-left: 3px solid transparent;
+}
+
+.pm-diff-host .ProseMirror [data-diff="inserted"] {
+  background: rgba(26, 127, 55, 0.06);
+  border-left-color: #1a7f37;
+}
+
+.pm-diff-host .ProseMirror [data-diff="deleted"] {
+  background: rgba(207, 34, 46, 0.06);
+  border-left-color: #cf222e;
+}
+
+.pm-diff-host .ProseMirror [data-diff="modified"] {
+  border-left-color: #8250df;
+}
+
+.pm-diff-host .ProseMirror hr[data-diff="inserted"] {
+  border-top: 2px solid #1a7f37;
+  opacity: 0.6;
+}
