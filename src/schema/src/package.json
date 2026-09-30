@@ -1,0 +1,47 @@
+{
+  "name": "@schema",
+  "version": "0.3.1",
+  "sideEffects": false,
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/types/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/cjs/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "build:esm": "tsc -p ./tsconfig.json",
+    "build:cjs": "tsc -p tsconfig.json --outDir ./dist/cjs --module commonjs --moduleResolution node",
+    "build:types": "tsc -p tsconfig.json --outDir ./dist/types --module esnext --moduleResolution node --declaration --declarationMap --emitDeclarationOnly",
+    "build": "rm -rf dist && npm run build:esm && npm run build:cjs && npm run build:types",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "prepare": "[ \"$CI\" = \"true\" ] || husky install"
+  },
+  "peerDependencies": {
+    "markdown-it": "14.3.1",
+    "prosemirror-markdown": "1.13.6",
+    "prosemirror-model": "1.25.11",
+    "prosemirror-schema-basic": "1.2.4",
+    "prosemirror-tables": "1.8.5"
+  },
+  "devDependencies": {
+    "@types/markdown-it": "14.2.0",
+    "markdown-it": "14.3.1",
+    "prosemirror-markdown": "1.13.6",
+    "prosemirror-model": "1.25.11",
+    "prosemirror-schema-basic": "1.2.4",
+    "prosemirror-tables": "1.8.5",
+    "typescript": "5.9.3",
+    "vitest": "4.1.11",
+    "husky": "^8.0.0"
+  }
+}
+

@@ -1,0 +1,1 @@
+export { tableNodeSpec } from './table-block.spec'
