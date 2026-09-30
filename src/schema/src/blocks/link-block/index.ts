@@ -1,0 +1,1 @@
+export { linkMarkSpec } from './link-block.spec'

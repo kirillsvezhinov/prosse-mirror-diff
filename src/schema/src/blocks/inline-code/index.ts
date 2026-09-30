@@ -1,0 +1,1 @@
+export { inlineCodeMarkSpec } from './inline-code.spec'
